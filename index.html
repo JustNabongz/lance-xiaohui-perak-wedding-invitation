@@ -839,12 +839,47 @@
   /* Ensure html/body are freely scrollable */
   .inapp body {
     touch-action: auto !important;
-    -webkit-overflow-scrolling: touch;
+    -webkit-overflow-scrolling: touch !important;
     overflow-y: auto !important;
   }
   html.inapp, .inapp body {
     height: auto !important;
     overflow: visible !important;
+  }
+  /* Telegram needs explicit scroll on the root elements */
+  html.telegram {
+    overflow-y: scroll !important;
+    -webkit-overflow-scrolling: touch !important;
+    height: auto !important;
+  }
+  html.telegram body {
+    overflow-y: visible !important;
+    -webkit-overflow-scrolling: touch !important;
+    min-height: 100% !important;
+    height: auto !important;
+    position: static !important;
+  }
+
+  /* ===========================================
+     TELEGRAM WEBVIEW — replace ALL position:fixed
+     Telegram's WebView blocks scroll if any
+     fixed-position element exists on the page.
+  =========================================== */
+  .telegram nav {
+    position: -webkit-sticky !important;
+    position: sticky !important;
+    top: 0 !important;
+  }
+  .telegram .rsvp-fab {
+    display: none !important;
+  }
+  .telegram .rsvp-modal-backdrop {
+    position: absolute !important;
+    /* Use JS to reposition on open */
+  }
+  /* Also kill the sticky nav offset issue in Telegram */
+  .telegram body {
+    padding-top: 0 !important;
   }
 </style>
 </head>
@@ -1288,12 +1323,19 @@
   /* ---- In-app WebView detection & scroll fix ---- */
   (function() {
     var ua = navigator.userAgent || '';
-    // Detect Telegram, WhatsApp, Instagram, Facebook in-app browsers
-    var isInApp = /Instagram|FBAN|FBAV|WhatsApp|Telegram/i.test(ua) ||
-                  (ua.indexOf('Mobile') !== -1 && ua.indexOf('Safari') === -1 && ua.indexOf('Chrome') === -1 && ua.indexOf('CriOS') === -1 && ua.indexOf('FxiOS') === -1);
-    if (isInApp) {
-      document.documentElement.classList.add('inapp');
-    }
+    var isTelegram = /Telegram/i.test(ua) ||
+                     typeof window.TelegramWebviewProxy !== 'undefined' ||
+                     typeof window.TelegramWebviewProxyProto !== 'undefined' ||
+                     (ua.indexOf('Mobile') !== -1 &&
+                      ua.indexOf('Safari') === -1 &&
+                      ua.indexOf('Chrome') === -1 &&
+                      ua.indexOf('CriOS') === -1 &&
+                      ua.indexOf('FxiOS') === -1 &&
+                      ua.indexOf('Instagram') === -1 &&
+                      ua.indexOf('FBAN') === -1);
+    var isInApp = isTelegram || /Instagram|FBAN|FBAV|WhatsApp/i.test(ua);
+    if (isInApp) document.documentElement.classList.add('inapp');
+    if (isTelegram) document.documentElement.classList.add('telegram');
   })();
 
   /* ---- Smooth offset scroll helper ---- */
@@ -1369,7 +1411,13 @@
 
   /* ---- RSVP modal ---- */
   function openRsvp() {
-    document.getElementById('rsvp-backdrop').classList.add('open');
+    var backdrop = document.getElementById('rsvp-backdrop');
+    // In Telegram, fixed is broken — use absolute positioned to scroll offset
+    if (document.documentElement.classList.contains('telegram')) {
+      backdrop.style.top = window.pageYOffset + 'px';
+      backdrop.style.height = window.innerHeight + 'px';
+    }
+    backdrop.classList.add('open');
     document.body.style.overflow = 'hidden';
   }
   function closeRsvp() {

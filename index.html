@@ -46,6 +46,8 @@
     font-weight: 300;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    touch-action: pan-y;
+    overscroll-behavior-y: none;
   }
 
   /* ===========================================
@@ -58,8 +60,7 @@
     position: fixed; top: 0; left: 0; right: 0; z-index: 100;
     display: flex; justify-content: center; flex-wrap: wrap; gap: 12px;
     padding: 11px 16px;
-    background: rgba(250,246,240,0.93);
-    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    background: rgba(250,246,240,0.97);
     border-bottom: 1px solid rgba(240,232,220,0.5);
   }
   nav a {
@@ -466,7 +467,6 @@
     position: absolute; top: 10px; right: 10px;
     font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
     color: var(--white); background: rgba(44,36,32,0.55);
-    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
     padding: 4px 10px; border-radius: 20px; font-weight: 500;
   }
   .explore-card-body { padding: 16px 18px 20px; }
@@ -558,6 +558,7 @@
     opacity: 0; transform: translateY(22px);
     transition: opacity 0.85s cubic-bezier(0.22,1,0.36,1),
                 transform 0.85s cubic-bezier(0.22,1,0.36,1);
+    will-change: opacity, transform;
   }
   .reveal.visible  { opacity: 1; transform: translateY(0); }
   .reveal-d1 { transition-delay: 0.08s; }
@@ -679,8 +680,6 @@
   .rsvp-modal-backdrop {
     position: fixed; inset: 0; z-index: 500;
     background: rgba(44,36,32,0.65);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
     display: flex; align-items: center; justify-content: center;
     padding: 20px;
     opacity: 0; pointer-events: none;
@@ -1220,13 +1219,27 @@
 </div>
 
 <script>
-  /* ---- Scroll button ---- */
+  /* ---- Smooth offset scroll helper ---- */
+  function smoothScrollTo(el) {
+    if (!el) return;
+    var navH = document.querySelector('nav') ? document.querySelector('nav').offsetHeight : 0;
+    var top = el.getBoundingClientRect().top + window.pageYOffset - navH;
+    window.scrollTo({ top: top, behavior: 'smooth' });
+  }
+
   function scrollToContent() {
     var target = document.querySelector('.hero').nextElementSibling;
-    if (target) {
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    smoothScrollTo(target);
   }
+
+  /* Intercept nav anchor clicks for smooth offset scroll */
+  document.querySelectorAll('nav a[href^="#"]').forEach(function(a) {
+    a.addEventListener('click', function(e) {
+      var id = this.getAttribute('href').slice(1);
+      var target = document.getElementById(id);
+      if (target) { e.preventDefault(); smoothScrollTo(target); }
+    });
+  });
 
   /* ---- Reveal on scroll ---- */
   var observer = new IntersectionObserver(function(entries) {
@@ -1285,15 +1298,9 @@
     if (e.key === 'Escape') closeRsvp();
   });
 
-  /* Passive touch — lets WebViews scroll on first swipe */
-  ['touchstart','touchmove'].forEach(function(t) {
-    document.addEventListener(t, function(){}, { passive: true });
-    document.body.addEventListener(t, function(){}, { passive: true });
-  });
-  document.addEventListener('touchstart', function wakeScroll() {
-    window.scrollTo(window.scrollX, window.scrollY);
-    document.removeEventListener('touchstart', wakeScroll);
-  }, { passive: true });
+  /* Ensure passive touch listeners so browser never waits for JS before scrolling */
+  document.addEventListener('touchstart', function(){}, { passive: true });
+  document.addEventListener('touchmove',  function(){}, { passive: true });
 </script>
 
 </body>

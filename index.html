@@ -904,14 +904,14 @@
   .inapp .hero {
     contain: none !important;
   }
-  /* FIX: in WebViews, restore overflow:hidden (safe here since all animations,
-     will-change, and contain are already stripped above). Use simple border-radius
-     instead of clip-path since older WebViews have poor clip-path support.
-     Also add padding-bottom fallback since Telegram doesn't support aspect-ratio. */
+  /* FIX: in WebViews, use overflow:hidden + the original arch border-radius.
+     Safe here because all animations, will-change, and contain are stripped above,
+     so overflow:hidden won't create a scroll-blocking compositing layer.
+     Also add padding-bottom fallback since some WebViews don't support aspect-ratio. */
   .inapp .hero-photo {
     clip-path: none !important;
     overflow: hidden !important;
-    border-radius: 8px !important;
+    border-radius: 50% 50% 4% 4% / 34% 34% 3% 3% !important;
     box-shadow: none !important;
   }
   .inapp .hero-photo-inner {

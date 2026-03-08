@@ -1026,15 +1026,217 @@
   html[lang="zh"] .closing-subtitle {
     font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
   }
-  html[lang="zh"] .hero-ornament,
-  html[lang="zh"] .section-label,
-  html[lang="zh"] .accom-card-label,
-  html[lang="zh"] .travel-option-badge,
-  html[lang="zh"] .explore-card-badge,
-  html[lang="zh"] .countdown-label,
+
+  /* ---- Chinese: fix tiny labels ----
+     Chinese characters need:
+     - larger font-size (CJK glyphs are denser, need ~2px bump)
+     - tighter letter-spacing (wide tracking breaks CJK readability)
+     - no text-transform:uppercase (meaningless for CJK)
+  */
+
+  /* Nav links */
+  html[lang="zh"] nav a {
+    font-family: 'Noto Serif SC', 'DM Sans', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    text-transform: none;
+  }
+
+  /* Hero badge overlay */
+  html[lang="zh"] .hero-photo-badge-label {
+    font-family: 'Noto Serif SC', 'DM Sans', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: none;
+  }
+
+  /* Hero ornament (the invitation line) */
+  html[lang="zh"] .hero-ornament {
+    font-family: 'Noto Serif SC', 'DM Sans', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    text-transform: none;
+  }
+
+  /* Hero date */
+  html[lang="zh"] .hero-date {
+    font-family: 'Noto Serif SC', 'DM Sans', sans-serif;
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    text-transform: none;
+  }
+
+  /* Hero location */
+  html[lang="zh"] .hero-location {
+    font-family: 'Noto Serif SC', serif;
+  }
+
+  /* Countdown labels */
+  html[lang="zh"] .countdown-label {
+    font-family: 'Noto Serif SC', 'DM Sans', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: none;
+  }
+
+  /* RSVP button */
+  html[lang="zh"] .rsvp-btn {
+    font-family: 'Noto Serif SC', 'DM Sans', sans-serif;
+    font-size: 14px;
+    letter-spacing: 0.12em;
+    text-transform: none;
+  }
+
+  /* Scroll label */
+  html[lang="zh"] .hero-scroll span {
+    font-family: 'Noto Serif SC', 'DM Sans', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: none;
+  }
+
+  /* Section labels (e.g. "婚礼庆典", "住宿安排") */
+  html[lang="zh"] .section-label {
+    font-family: 'Noto Serif SC', 'DM Sans', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: none;
+  }
+
+  /* Timeline day labels */
+  html[lang="zh"] .timeline-day-label {
+    font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
+  }
+
+  /* Event time */
+  html[lang="zh"] .event-time {
+    font-family: 'Noto Serif SC', 'DM Sans', sans-serif;
+  }
+
+  /* Event name (Chinese) */
+  html[lang="zh"] .event-name {
+    font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
+  }
+
+  /* Event subtitle — in zh mode these become just Chinese, no pinyin */
+  html[lang="zh"] .event-name-cn {
+    font-size: 14px;
+    color: var(--ink-light);
+  }
+
+  /* Map card labels */
+  html[lang="zh"] .map-card-name {
+    font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
+  }
   html[lang="zh"] .map-card-cta {
     font-family: 'Noto Serif SC', 'DM Sans', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: none;
+  }
+
+  /* Accommodation card labels */
+  html[lang="zh"] .accom-card-label {
+    font-family: 'Noto Serif SC', 'DM Sans', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: none;
+  }
+  html[lang="zh"] .accom-card-value {
+    font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
+  }
+
+  /* Travel badges */
+  html[lang="zh"] .travel-option-badge {
+    font-family: 'Noto Serif SC', 'DM Sans', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: none;
+  }
+
+  /* Travel detail labels */
+  html[lang="zh"] .travel-detail .td-label {
+    font-family: 'Noto Serif SC', 'DM Sans', sans-serif;
+  }
+  html[lang="zh"] .travel-detail span {
+    font-family: 'Noto Serif SC', 'DM Sans', sans-serif;
+  }
+
+  /* Transport box title */
+  html[lang="zh"] .transport-box h4 {
+    font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
+  }
+
+  /* Travel option title */
+  html[lang="zh"] .travel-option h3 {
+    font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
+  }
+
+  /* Explore card badge */
+  html[lang="zh"] .explore-card-badge {
+    font-family: 'Noto Serif SC', 'DM Sans', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    text-transform: none;
+  }
+
+  /* Explore card titles */
+  html[lang="zh"] .explore-card-body h3 {
+    font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
+  }
+
+  /* Closing section */
+  html[lang="zh"] .closing .section-label {
+    font-size: 13px;
     letter-spacing: 0.08em;
+    text-transform: none;
+  }
+  html[lang="zh"] .closing .section-title {
+    font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
+  }
+  html[lang="zh"] .closing-date {
+    font-family: 'Noto Serif SC', 'DM Sans', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: none;
+  }
+
+  /* Footer */
+  html[lang="zh"] footer p {
+    font-family: 'Noto Serif SC', 'DM Sans', sans-serif;
+    letter-spacing: 0.06em;
+    text-transform: none;
+  }
+
+  /* FAB button */
+  html[lang="zh"] .rsvp-fab {
+    font-family: 'Noto Serif SC', 'DM Sans', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: none;
+  }
+
+  /* RSVP modal title */
+  html[lang="zh"] .rsvp-modal-title {
+    font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
+  }
+
+  /* ---- Chinese: tablet+ size bumps ---- */
+  @media (min-width: 600px) {
+    html[lang="zh"] nav a { font-size: 13px; }
+    html[lang="zh"] .hero-ornament { font-size: 14px; }
+  }
+  @media (min-width: 860px) {
+    html[lang="zh"] nav a { font-size: 14px; }
+    html[lang="zh"] .hero-ornament { font-size: 14px; }
+    html[lang="zh"] .hero-date { font-size: 15px; }
+  }
+
+  /* ---- Chinese: tiny phones ---- */
+  @media (max-width: 379px) {
+    html[lang="zh"] nav a { font-size: 12px; }
+    html[lang="zh"] .hero-ornament { font-size: 12px; }
+    html[lang="zh"] .countdown-label { font-size: 11px; }
   }
 </style>
 </head>

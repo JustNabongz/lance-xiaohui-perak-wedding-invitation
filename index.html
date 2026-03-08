@@ -10,10 +10,14 @@
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Preload hero image to prevent layout shift during first load -->
+<link rel="preload" as="image" href="https://framerusercontent.com/images/WHWnTHi4Dj5YnPBGfkYGSdUpzo.jpeg">
 <script>
   if (location.hash) history.replaceState(null, '', location.pathname);
 </script>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Noto+Serif+SC:wght@300;400;600&display=swap" rel="stylesheet">
+<!-- Non-render-blocking font load: swap display prevents FOIT scroll stall -->
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Noto+Serif+SC:wght@300;400;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Noto+Serif+SC:wght@300;400;600&display=swap" rel="stylesheet"></noscript>
 <style>
   /* ===========================================
      DESIGN TOKENS
@@ -45,8 +49,10 @@
     font-weight: 300;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    /* FIX: single touch-action on body only, not on children */
-    touch-action: pan-y; -ms-touch-action: pan-y;
+    /* FIX: 'manipulation' allows scroll + pinch-zoom without
+       the gesture-direction detection delay that 'pan-y' causes */
+    touch-action: manipulation;
+    -ms-touch-action: manipulation;
   }
 
   /* ===========================================
@@ -97,10 +103,12 @@
   .hero-left { width: 100%; display: flex; justify-content: center; }
   .hero-photo {
     width: 88vw; max-width: 372px;
-    border-radius: 50% 50% 4% 4% / 34% 34% 3% 3%;
-    overflow: hidden; flex-shrink: 0;
+    /* FIX: use clip-path instead of overflow:hidden + border-radius.
+       overflow:hidden + border-radius forces a compositing layer that blocks scroll on mobile.
+       clip-path: inset(round) gives the same visual result without the compositing layer. */
+    clip-path: inset(0 round 50% 50% 4% 4% / 34% 34% 3% 3%);
+    flex-shrink: 0;
     margin-bottom: 28px;
-    /* FIX: remove box-shadow on mobile to avoid compositing layer, re-add on desktop */
     position: relative;
   }
   /* FIX: use aspect-ratio instead of padding-bottom hack to simplify layout */
@@ -213,6 +221,7 @@
     }
     .hero-photo {
       width: 100%; max-width: 100%; height: 100%;
+      clip-path: none; overflow: hidden;
       border-radius: 0; margin: 0;
       box-shadow: none; opacity: 1; animation: none;
     }
@@ -650,7 +659,7 @@
       will-change: auto !important;
     }
     .hero-photo {
-      contain: layout style paint;
+      /* No contain here — it creates a stacking context that can block scroll */
     }
     .reveal {
       opacity: 1 !important;
@@ -778,12 +787,11 @@
   .rsvp-modal-backdrop {
     position: fixed; inset: 0; z-index: 500;
     background: rgba(44,36,32,0.65);
-    display: flex; align-items: center; justify-content: center;
+    display: none; align-items: center; justify-content: center;
     padding: 20px;
-    opacity: 0; pointer-events: none;
   }
   .rsvp-modal-backdrop.open {
-    opacity: 1; pointer-events: all;
+    display: flex;
   }
   .rsvp-modal {
     background: var(--white);
@@ -795,7 +803,6 @@
     box-shadow: 0 24px 80px rgba(44,36,32,0.25);
   }
   @media (hover: hover) {
-    .rsvp-modal-backdrop { transition: opacity 0.3s ease; }
     .rsvp-modal { transform: translateY(20px); transition: transform 0.3s cubic-bezier(0.22,1,0.36,1); }
     .rsvp-modal-backdrop.open .rsvp-modal { transform: translateY(0); }
   }
@@ -897,13 +904,11 @@
   .inapp .hero {
     contain: none !important;
   }
-  /* FIX: break the overflow:hidden + border-radius compositing layer in WebViews */
+  /* FIX: in WebViews, remove clip-path entirely for simplest possible layout */
   .inapp .hero-photo {
-    overflow: visible !important;
+    clip-path: none !important;
     border-radius: 0 !important;
     box-shadow: none !important;
-    /* Use clip-path instead — doesn't create scroll-blocking layer */
-    clip-path: ellipse(50% 45% at 50% 42%);
   }
   .inapp .reveal {
     opacity: 1 !important;
@@ -921,7 +926,7 @@
   }
   /* Ensure html/body are freely scrollable */
   .inapp body {
-    touch-action: auto !important;
+    touch-action: manipulation !important;
     -webkit-overflow-scrolling: touch !important;
     overflow-y: auto !important;
   }
@@ -979,7 +984,7 @@
   <div class="hero-left">
     <div class="hero-photo">
       <div class="hero-photo-inner">
-        <img src="https://framerusercontent.com/images/WHWnTHi4Dj5YnPBGfkYGSdUpzo.jpeg" alt="Lance and Xiao Hui" />
+        <img src="https://framerusercontent.com/images/WHWnTHi4Dj5YnPBGfkYGSdUpzo.jpeg" alt="Lance and Xiao Hui" fetchpriority="high" decoding="async" />
         <div class="hero-photo-badge">
           <div class="hero-photo-badge-label">Wedding Invitation</div>
           <div class="hero-photo-badge-title">You're Invited</div>
@@ -1390,7 +1395,8 @@
       <button class="rsvp-modal-close" onclick="closeRsvp()" aria-label="Close">&#x2715;</button>
     </div>
     <iframe
-      src="https://docs.google.com/forms/d/e/1FAIpQLSe-eM7sqKQvPJSzBOTRjNrsln-bLyKGxcQoSvw78XiGyQMjZQ/viewform?embedded=true"
+      id="rsvp-iframe"
+      data-src="https://docs.google.com/forms/d/e/1FAIpQLSe-eM7sqKQvPJSzBOTRjNrsln-bLyKGxcQoSvw78XiGyQMjZQ/viewform?embedded=true"
       title="RSVP Form"
       loading="lazy">
       Loading…
@@ -1463,32 +1469,42 @@
   fabObserver.observe(hero);
 
   /* ---- Countdown to 12 Sep 2026 08:00 MYT (UTC+8) ---- */
-  var target = new Date('2026-09-12T08:00:00+08:00').getTime();
-  function updateCountdown() {
-    var now = Date.now();
-    var diff = target - now;
+  var cdTarget = new Date('2026-09-12T08:00:00+08:00').getTime();
+  var cdEls = {
+    d: document.getElementById('cd-days'),
+    h: document.getElementById('cd-hours'),
+    m: document.getElementById('cd-mins'),
+    s: document.getElementById('cd-secs')
+  };
+  var cdPrev = { d: '', h: '', m: '', s: '' };
+  function tickCountdown() {
+    var diff = cdTarget - Date.now();
+    var d, h, m, s;
     if (diff <= 0) {
-      document.getElementById('cd-days').textContent  = '00';
-      document.getElementById('cd-hours').textContent = '00';
-      document.getElementById('cd-mins').textContent  = '00';
-      document.getElementById('cd-secs').textContent  = '00';
-      return;
+      d = h = m = s = '00';
+    } else {
+      d = String(Math.floor(diff / 86400000)).padStart(2,'0');
+      h = String(Math.floor((diff % 86400000) / 3600000)).padStart(2,'0');
+      m = String(Math.floor((diff % 3600000)  / 60000)).padStart(2,'0');
+      s = String(Math.floor((diff % 60000)    / 1000)).padStart(2,'0');
     }
-    var d = Math.floor(diff / 86400000);
-    var h = Math.floor((diff % 86400000) / 3600000);
-    var m = Math.floor((diff % 3600000)  / 60000);
-    var s = Math.floor((diff % 60000)    / 1000);
-    document.getElementById('cd-days').textContent  = String(d).padStart(2,'0');
-    document.getElementById('cd-hours').textContent = String(h).padStart(2,'0');
-    document.getElementById('cd-mins').textContent  = String(m).padStart(2,'0');
-    document.getElementById('cd-secs').textContent  = String(s).padStart(2,'0');
+    /* Only write DOM when values actually change — avoids layout thrash */
+    if (d !== cdPrev.d) { cdEls.d.textContent = d; cdPrev.d = d; }
+    if (h !== cdPrev.h) { cdEls.h.textContent = h; cdPrev.h = h; }
+    if (m !== cdPrev.m) { cdEls.m.textContent = m; cdPrev.m = m; }
+    if (s !== cdPrev.s) { cdEls.s.textContent = s; cdPrev.s = s; }
+    requestAnimationFrame(tickCountdown);
   }
-  updateCountdown();
-  setInterval(updateCountdown, 1000);
+  requestAnimationFrame(tickCountdown);
 
   /* ---- RSVP modal ---- */
   function openRsvp() {
     var backdrop = document.getElementById('rsvp-backdrop');
+    /* Lazy-load iframe src on first open */
+    var iframe = document.getElementById('rsvp-iframe');
+    if (iframe && !iframe.src) {
+      iframe.src = iframe.getAttribute('data-src');
+    }
     if (document.documentElement.classList.contains('telegram')) {
       backdrop.style.top = window.pageYOffset + 'px';
       backdrop.style.height = window.innerHeight + 'px';
